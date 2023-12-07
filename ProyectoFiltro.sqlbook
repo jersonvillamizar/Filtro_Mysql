@@ -1,0 +1,273 @@
+-- SQLBook: Code
+CREATE DATABASE IF NOT EXISTS FiltroMysql;
+USE FiltroMysql;
+
+DROP TABLE IF EXISTS `Zonas`;
+DROP TABLE IF EXISTS `Conductores`;
+DROP TABLE IF EXISTS `Rutas`;
+DROP TABLE IF EXISTS `Estaciones`;
+DROP TABLE IF EXISTS `Conductor_Ruta`;
+DROP TABLE IF EXISTS `Buses`;
+DROP TABLE IF EXISTS `Ruta_Bus`;
+DROP TABLE IF EXISTS `Dias_Bus`;
+
+
+CREATE TABLE IF NOT EXISTS `Zonas`(
+    `id_zona` INT AUTO_INCREMENT PRIMARY KEY,
+    `nombre_zona` VARCHAR(255)
+) AUTO_INCREMENT=1;
+
+INSERT INTO `Zonas` (`nombre_zona`, `id_zona`) VALUES
+('Norte', 1),
+('Sur', 2),
+('Oriente', 3),
+('Occidente', 4),
+('Floridablanca', 5),
+('Giron', 6),
+('Piedecuesta', 7);
+
+CREATE TABLE IF NOT EXISTS `Conductores`(
+    `id_conductor` INT AUTO_INCREMENT PRIMARY KEY,
+    `nombre` VARCHAR(255),
+    `apellido` VARCHAR(255),
+    `id_zona` INT,
+    FOREIGN KEY(`id_zona`) REFERENCES `Zonas`(`id_zona`)
+)AUTO_INCREMENT=1;
+
+INSERT INTO `Conductores` (`nombre`, `apellido`, `id_conductor`, `id_zona`) VALUES
+('Andres Manuel', 'Lopez Obrador', 1, NULL),
+('Nicolas', 'Maduro Moros', 2, NULL),
+('Alberto', 'Fernandez', 3, 4),
+('Luiz Inacio', 'Lula da Silva', 4, NULL),
+('Gabriel', 'Boric', 5, 1),
+('Miguel', 'Diaz-Canel', 6, 5),
+('Daniel', 'Ortega', 7, 5),
+('Gustavo Petro', 'Urrego', 8, NULL),
+('Luis', 'Arce', 9, NULL),
+('Xiomara', 'Castro', 10, 5);
+
+CREATE TABLE IF NOT EXISTS `Rutas`(
+    `id_ruta` INT AUTO_INCREMENT PRIMARY KEY,
+    `nombre_ruta` VARCHAR(255),
+    `tiempo_ruta` TIME
+)AUTO_INCREMENT=1;
+
+ALTER TABLE Rutas ADD COLUMN `tiempo_ruta` TIME AFTER `nombre_ruta`;
+
+INSERT INTO `Rutas` (`nombre_ruta`, `tiempo_ruta`, `id_ruta`) VALUES
+('Universidades', '02:00:00', 1),
+('Cafe Madrid', '02:15:00', 2),
+('Cacique', '01:45:00', 3),
+('Diamantes', '01:50:00', 4),
+('Terminal', '02:00:00', 5),
+('Prado', '01:30:00', 6),
+('Cabecera', '01:30:00', 7),
+('Ciudadela', '02:00:00', 8),
+('Punta Estrella', '02:30:00', 9),
+('Niza', '02:45:00', 10),
+('Autopista', '02:15:00', 11),
+('Lagos', '02:15:00', 12),
+('Centro Florida', '02:30:00', 13);
+
+CREATE TABLE IF NOT EXISTS `Estaciones`(
+    `id_parada` INT AUTO_INCREMENT PRIMARY KEY,
+    `nombre_estacion` VARCHAR(255),
+    `id_ruta` INT,
+    FOREIGN KEY(`id_ruta`) REFERENCES `Rutas`(`id_ruta`)
+    )AUTO_INCREMENT=1;
+
+INSERT INTO `Estaciones` (`id_parada`, `nombre_estacion`, `id_ruta`) VALUES
+(1, 'Colseguros', 1),
+(2, 'Clinica Chicamocha', 1),
+(3, 'Plaza Guarin', 1),
+(4, 'Mega Mall', 1),
+(5, 'UIS', 1),
+(6, 'UDI', 1),
+(7, 'Santo Tomas', 1),
+(8, 'Boulevard Santander', 3),
+(9, 'Bucaros', 3),
+(10, 'Rosita', 3),
+(11, 'Puerta del Sol', 3),
+(12, 'Cacique', 3),
+(13, 'Plaza Satelite', 4),
+(14, 'La Sirena', 4),
+(15, 'Provenza', 4),
+(16, 'Fontana', 5),
+(17, 'Gibraltar', 5),
+(18, 'Terminal', 8),
+(19, 'Mutis', 8),
+(20, 'Plaza Real', 8);
+
+CREATE TABLE IF NOT EXISTS `Conductor_Ruta`(
+    `id_conductor_ruta` INT AUTO_INCREMENT PRIMARY KEY,
+    `id_conductor` INT,
+    `id_ruta` INT,
+    FOREIGN KEY(`id_conductor`) REFERENCES `Conductores`(`id_conductor`),
+    FOREIGN KEY(`id_ruta`) REFERENCES `Rutas`(`id_ruta`)
+)AUTO_INCREMENT=1;
+
+INSERT INTO `Conductor_Ruta` (`id_conductor`, `id_ruta`, `id_conductor_ruta`) VALUES
+(5, 1, 1),
+(5, 2, 2),
+(3, 4, 3),
+(3, 5, 4),
+(10, 10, 5),
+(10, 11, 6),
+(7, 11, 7),
+(6, 12, 8);
+
+CREATE TABLE IF NOT EXISTS `Buses`(
+    `id_bus` INT AUTO_INCREMENT PRIMARY KEY,
+    `placa` VARCHAR(255)
+)AUTO_INCREMENT=1;
+
+INSERT INTO `Buses` (`placa`, `id_bus`) VALUES
+('XVH345', 1),
+('XDL965', 2),
+('XFG847', 3),
+('XRJ452', 4),
+('XDF459', 5),
+('XET554', 6),
+('XKL688', 7),
+('XXL757', 8);
+
+CREATE TABLE IF NOT EXISTS `Ruta_Bus`(
+    `id_ruta_bus` INT AUTO_INCREMENT PRIMARY KEY,
+    `id_bus` INT,
+    `id_conductor_ruta` INT,
+    FOREIGN KEY(`id_bus`) REFERENCES `Buses`(`id_bus`),
+    FOREIGN KEY(`id_conductor_ruta`) REFERENCES `Conductor_Ruta`(`id_conductor_ruta`)
+)AUTO_INCREMENT=1;
+
+INSERT INTO `Ruta_Bus` (`id_bus`, `id_conductor_ruta`, `id_ruta_bus`) VALUES
+(1, 1, 1),
+(3, 1, 2),
+(5, 2, 3),
+(5, 3, 4),
+(6, 3, 5),
+(1, 3, 6),
+(1, 4, 7),
+(3, 4, 8),
+(3, 5, 9),
+(5, 5, 10),
+(4, 5, 11),
+(7, 6, 12),
+(7, 7, 13),
+(7, 8, 14),
+(6, 8, 15);
+
+CREATE TABLE IF NOT EXISTS `Dias_Bus`(
+    `id_dia_bus` INT AUTO_INCREMENT PRIMARY KEY,
+    `dia` VARCHAR(255),
+    `id_ruta_bus` INT,
+    FOREIGN KEY(`id_ruta_bus`) REFERENCES `Ruta_Bus`(`id_ruta_bus`)
+)AUTO_INCREMENT=1;
+
+INSERT INTO `Dias_Bus` (`dia`, `id_ruta_bus`, `id_dia_bus`) VALUES
+('Lunes', 1, 1),
+('Martes', 1, 2),
+('Miercoles', 2, 3),
+('Jueves', 2, 4),
+('Viernes', 3, 5),
+('Sabado', 3, 6),
+('Domingo', 3, 7),
+('Lunes', 4, 8),
+('Martes', 5, 9),
+('Miercoles', 6, 10),
+('Jueves', 7, 11),
+('Viernes', 8, 12),
+('Sabado', 8, 13),
+('Domingo', 8, 14),
+('Lunes', 9, 15),
+('Martes', 9, 16),
+('Miercoles', 10, 17),
+('Jueves', 10, 18),
+('Viernes', 11, 19),
+('Sabado', 12, 20),
+('Domingo', 12, 21),
+('Lunes', 13, 22),
+('Martes', 13, 23),
+('Miercoles', 14, 24),
+('Jueves', 14, 25),
+('Viernes', 14, 26),
+('Sabado', 15, 27),
+('Domingo', 15, 28);
+
+/* 1 Cantidad de Paradas por Ruta
+ */
+
+SELECT COUNT(*) AS 'Paradas por Ruta', r.nombre_ruta FROM Estaciones e 
+JOIN Rutas r ON e.id_ruta = r.id_ruta
+GROUP BY e.id_ruta;
+
+/* 2 Nombre de las Paradas de la Ruta Universidades
+ */
+
+SELECT e.nombre_estacion, r.nombre_ruta FROM Estaciones e 
+JOIN Rutas r ON e.id_ruta = r.id_ruta
+WHERE r.id_ruta = 1;
+
+/* 3 Nombres de las Rutas No Programadas */
+
+SELECT r.nombre_ruta, e.id_ruta AS Programadas FROM Rutas r
+LEFT JOIN Estaciones e ON e.id_ruta = r.id_ruta
+WHERE e.id_ruta IS NULL;
+
+SELECT r.nombre_ruta, cr.id_ruta AS Programadas FROM Rutas r
+LEFT JOIN Conductor_Ruta cr ON cr.id_ruta = r.id_ruta
+WHERE cr.id_ruta IS NULL;
+
+/* 4 Rutas Programadas sin Conductor Asignado */
+
+SELECT DISTINCT r.nombre_ruta, cr.id_conductor AS Conductor FROM Rutas r
+JOIN Estaciones e ON e.id_ruta = r.id_ruta
+LEFT JOIN Conductor_Ruta cr ON cr.id_ruta = r.id_ruta
+WHERE cr.id_conductor IS NULL;
+
+SELECT DISTINCT r.nombre_ruta, cr.id_conductor AS Conductor FROM Rutas r
+LEFT JOIN Conductor_Ruta cr ON cr.id_ruta = r.id_ruta
+WHERE cr.id_conductor IS NULL;
+
+/* 5 Conductores No Asignados a la Programación */
+
+SELECT DISTINCT c.id_conductor, c.nombre, c.apellido, cr.id_conductor AS Asignado 
+FROM Conductores c
+LEFT JOIN Conductor_Ruta cr ON cr.id_conductor = c.id_conductor
+WHERE cr.id_conductor IS NULL;
+
+/* 6 Buses No asignados a la Programación
+ */
+
+SELECT DISTINCT b.id_bus, b.placa, br.id_bus AS Asignado FROM Buses b
+LEFT JOIN Ruta_Bus br ON br.id_bus = b.id_bus
+WHERE br.id_bus IS NULL;
+
+/* 7 Zonas NO Programadas */
+
+SELECT z.id_zona, z.nombre_zona, c.id_zona AS Programadas FROM Zonas z
+LEFT JOIN Conductores c ON c.id_zona = z.id_zona
+WHERE c.id_zona IS NULL;
+
+/* 8 Programación asignada a cada conductor (Conductor, Ruta y Día) */
+
+SELECT c.nombre, c.apellido, r.nombre_ruta, db.dia FROM Conductores c
+JOIN Conductor_Ruta cr ON cr.id_conductor = c.id_conductor
+JOIN Rutas r ON r.id_ruta = cr.id_ruta
+JOIN Ruta_Bus rb ON rb.id_conductor_ruta = cr.id_conductor_ruta
+JOIN Dias_Bus db ON db.id_ruta_bus = rb.id_ruta_bus;
+
+/* 9 Programación asignada a conductores que hacen rutas de más de dos horas */
+
+SELECT c.nombre, c.apellido, r.nombre_ruta, r.tiempo_ruta FROM Conductores c
+JOIN Conductor_Ruta cr ON cr.id_conductor = c.id_conductor
+JOIN Rutas r ON r.id_ruta = cr.id_ruta
+WHERE r.tiempo_ruta > 2;
+
+/* 10 Nombres de Zonas y cantidad de rutas que tienen programadas (Contar)
+ */
+
+SELECT z.id_zona, z.nombre_zona, COUNT(r.id_ruta) AS Cantidad_Rutas FROM Zonas z
+JOIN Conductores c ON c.id_zona = z.id_zona
+JOIN Conductor_Ruta cr ON cr.id_conductor = c.id_conductor
+JOIN Rutas r ON r.id_ruta = cr.id_ruta
+GROUP BY z.id_zona;
